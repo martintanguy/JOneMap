@@ -26,12 +26,12 @@ import net.sourceforge.jgrib.NotSupportedException;
  
 public class Essai2
 {
-    @SuppressWarnings("null")
+   
 	public static void main(String[] args)
     {
         try
         {
-            GribFile grb = new GribFile("C:/Users/mtanguy/Desktop/usETsEOEEoSYmtRzKDl0e75I4HAjqDApvbb.grb");
+            GribFile grb = new GribFile("C:/Users/mtanguy/Desktop/grib/20140707_143303_.grb");
             grb.listRecords(System.out);
             
             int recordCount = grb.getRecordCount();

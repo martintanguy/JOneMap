@@ -92,7 +92,10 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
     protected JButton zoomInButton;
     protected JButton zoomOutButton;
 
-    
+	float tr1;
+	float tr2;
+	float tr3;
+	float tr4;
     
     public static enum ZOOM_BUTTON_STYLE {
         HORIZONTAL,
@@ -141,7 +144,7 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
      * retrieving the tiles.
      */
     public JMapViewer() {
-        this(new MemoryTileCache(), 8);
+        this(new MemoryTileCache(), 32);
         new DefaultMapController(this);
     }
 
@@ -183,7 +186,7 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
 
        
 		 
-        tc1.tileSource = new BingAerialTileSource();
+        tc1.tileSource = new OsmTileSource.Thun();
         tileController = tc1;
         tileSource = tc1.tileSource;
         
@@ -191,9 +194,16 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
 		tc2t = false;
 		tc3t = false;
 		tc4t = false;
+		
+		
+		tr1 = (float) 1;
+		tr2 = (float) 1;
+		tr3 = (float) 1;
+		tr4 = (float) 1;
+		
         
-        tc2.tileSource = new OsmTileSource.Thun();
-        tc3.tileSource = new OsmTileSource.SeaMap();
+        tc2.tileSource = new OsmTileSource.EmptyMap();
+        tc3.tileSource = new OsmTileSource.EmptyMap();
         tc4.tileSource = new OsmTileSource.EmptyMap();
         
 
@@ -705,71 +715,34 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
                         if (scrollWrapEnabled) {
                             // in case tilex is out of bounds, grab the tile to use for wrapping
                             int tilexWrap = (((tilex % gridLength) + gridLength) % gridLength);
-                            tile = tileController.getTile(tilexWrap, tiley, zoom);
+                            tile = tc1.getTile(tilex, tiley, zoom);
+                            tile.paint(g, posx, posy);            
+
                             
                         } else {	
                         	
+                        	
                         
                         	
-                        if (tc1t == false) {
-                        	
                             tile = tc1.getTile(tilex, tiley, zoom);
-//                            System.out.println("TC1 - 1");
-                            tile.paint(g, posx, posy); 
-                        	}
-                            else {
-                            
-                            tile = tc1.getTile(tilex, tiley, zoom);
-//                            System.out.println("TC1 - 2");
-                            tile.paintT(g, posx, posy); }
-                            
-                            
-                      	if (tc2t==false) {
-                      		
+                            tile.paint(g, posx, posy, tr1);            
                             tile = tc2.getTile(tilex, tiley, zoom);   
-//                            System.out.println("TC2 - 1");
-                            tile.paint(g, posx, posy); }
-                            else {
-                            
-                            tile = tc2.getTile(tilex, tiley, zoom);
-//                            System.out.println("TC2 - 2");
-                            tile.paintT(g, posx, posy)
-                            ;                          
-                            
-                            
-                            }
-                      	
-                    	if (tc3t==false) {
-                    		
+                            tile.paint(g, posx, posy, tr2); 
                     		tile = tc3.getTile(tilex, tiley, zoom);
-//                    		System.out.println("TC3 - 1");
-                    		tile.paint(g, posx, posy); }
-                    		else {
-                    		
-                    		tile = tc3.getTile(tilex, tiley, zoom);
-//                    		System.out.println("TC3 - 2");
-                    		tile.paintT(g, posx, posy); }
-                            
-              			if (tc4t==false) {
-              				
+                    		tile.paint(g, posx, posy, tr3);
               				tile = tc4.getTile(tilex, tiley, zoom);
-//              				System.out.println("TC4 - 1");
-              				tile.paint(g, posx, posy); }
-              				else {
+              				tile.paint(g, posx, posy, tr4); 
               				
-              				tile = tc4.getTile(tilex, tiley, zoom);
-//              				System.out.println("TC4 - 2");
-              				tile.paintT(g, posx, posy);
-              				}         
+              				         
                           
                         }
-                        if (tile != null) {
-                            
-//                        	tile.paint(g, posx, posy); 
-                        	}
-                            else { 
-//                            	tile.paintT(g, posx, posy); 
-                            	}
+//                        if (tile != null) {
+//                            
+//                        	tile.paint(g, posx, posy, (float)0.8); 
+//                        	}
+//                            else { 
+////                            	tile.paintT(g, posx, posy); 
+//                            	}
                         {
                         
                             if (tileGridVisible) {
@@ -1070,27 +1043,15 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
      *            the previous zoom level
      */
     protected void zoomChanged(int oldZoom) {
-    	removeAllMapMarkers();
+      	removeAllMapMarkers();
      	SetGrib();
     	
-    	repaint();
         zoomSlider.setToolTipText("Zoom level " + zoom);
         zoomInButton.setToolTipText("Zoom to level " + (zoom + 1));
         zoomOutButton.setToolTipText("Zoom to level " + (zoom - 1));
         zoomOutButton.setEnabled(zoom > tc1.getTileSource().getMinZoom());
         zoomInButton.setEnabled(zoom < tc1.getTileSource().getMaxZoom());
-        
-//        System.out.println("----------------UPX : "+ Up_x+ "UPY : "+Up_y+"DUP : "+Down_x+"DOY : "+Down_y);
-//        for(MeteoCoordinate c:New_Test.grib(zoom, Up_x, Up_y, Down_x, Down_y))
-//        	addMapMarker(new BoatMarker (c));
-//    	if(   BoatMarker.getLat() < getPosition().getLat()) {
-//			mapMarkerList.remove(c);
-//    		System.out.println("POINT OUT DELECTED " + mapMarkerList.indexOf(c)); }
-//    		else {
-    			
-//    	
-//    		System.out.println("NO POINT DELECTED");}}
-    		
+       
         	
     }
 
@@ -1321,6 +1282,8 @@ public class JMapViewer extends JPanel implements TileLoaderListener {
     }
 
     public AttributionSupport getAttribution() {
+     	removeAllMapMarkers();
+     	SetGrib();
         return attribution;
     }
 

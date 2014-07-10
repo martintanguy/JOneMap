@@ -10,6 +10,10 @@ import java.io.IOException;
 
 
 
+
+
+import javax.swing.JFileChooser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +35,8 @@ public class New_Test
 	
 	public static double[] grib1;
 	public static String description;
-
-	
+	public static int t;
+	public static int recordCount;
 	
 	public static void main(String[] args) {
 		
@@ -40,6 +44,7 @@ public class New_Test
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	public static List<MeteoCoordinate> grib(int zoom, double x1, double x2, double y1, double y2) {
 
 		
@@ -50,29 +55,33 @@ public class New_Test
 			
 			
 			
-			
+	
 			// Coordonnées de la zone d'affichage des données météo
 		    System.out.println ("GRIB BOX = " + x1 + " " + x2+ " " + y1 + " "+ y2);
 			
 		    // Chargement du fichier GRIB
-			GribFile grb = new GribFile(
-					"C:/Users/mtanguy/Desktop/grib/20140625_101130_.grb");
+			GribFile grb = new GribFile("C:/Users/mtanguy/Desktop/grib/20140708_142157_.grb");
 
 			
-			int recordCount = grb.getRecordCount();
+			
+			
+			if (zoom>=15) {zoom=14;}
+			
+			recordCount = grb.getRecordCount();
             System.out.println("gribFile reports " + recordCount + " records,");
 			
 			//Chargement des données Uwind et Vwind 
 			GribRecordGDS r2 = grb.getGrids()[0];
-			GribRecord ventU = grb.getRecord(1);
-			GribRecord ventV = grb.getRecord(2);
+			GribRecord ventV = grb.getRecord(1+t);
+			GribRecord ventU = grb.getRecord((recordCount/2)+1+t);
 	
 			//Description des enregistrements
 			GribRecordPDS PDS1 = ventU.getPDS();
 			GribRecordPDS PDS2 = ventV.getPDS();
 			System.out.println(PDS1.getDescription() + "---"
 					+ PDS2.getDescription());
-
+			description = null;
+			description = "  " + String.valueOf(ventV.getTime().getTime().toGMTString()) ;
 			
 			// Calcul de la taille de la grille Grib
 			int nbx = r2.getGridNX();
@@ -125,14 +134,13 @@ public class New_Test
 
 									// Ajout des points à afficher
 									if (x1 > lat && lat > y1 && x2 < lon && lon < y2) {
-										meteoCoordList.add(new MeteoCoordinate(lat, lon, speed,
-									dir));																			
-						}
+										meteoCoordList.add(new MeteoCoordinate(lat, lon, speed,	dir));			
+										}
 						
 					 	
 						}
 						
-						else if (zoom > zoom_moy) {
+						else if (zoom > zoom_moy && zoom < 15) {
 						double lon = lon_init + (i * dx);
 						double lat = lat_init + (j * dy); 
 
@@ -142,15 +150,25 @@ public class New_Test
 					
 						
 						for (double k = 0; k < dx; k = k+a_x) {
-							double v1U = ventU.getValue((int) (i-1), j);
-							double v1V = ventV.getValue((int) (i-1), j);
+							
+							
+							if (i<1) {
+							double v1U = ventU.getValue(i, j);
+							double v1V = ventV.getValue(i, j); 
+							}
+							else {
+							double v1U = ventU.getValue((i-1), j);
+							double v1V = ventV.getValue((i-1), j); 
+							
+							
+							
 							double lon_bis = lon_init + ((i*dx) + k);
 							double i1 = 1 - ((1/dx)*k);
 							double i2 = 1 - i1;
 							double speed2 = ((i1)*(Math.sqrt((vU * vU) + (vV * vV)))) + ((i2)*(Math.sqrt((v1U * v1U) + (v1V * v1V))));
 							double dir2 = ((i1)*(57.29578 * Math.atan2(vU, vV)) + ((i2)*(57.29578 * Math.atan2(v1U, v1V)) ));
 				
-
+							
 							
 							if (x1 > lat && lat > y1 && x2 < lon_bis && lon_bis < y2) {
 								System.out.println("POINT ADD : " + "--" + lat +"--" + lon_bis +"--" + speed2 +"--" + dir +"--" + k +"--" + a_x +"--" + i1);
@@ -163,8 +181,13 @@ public class New_Test
 							double j1 = 1 - ((1/abs_dy)*n);
 							double j2 = 1 - j1;
 							
-							double v2U = ventU.getValue(i, (int) (j-1));
-							double v2V = ventV.getValue(i, (int) (j-1));
+							if (j<1) {
+								double v2U = ventU.getValue(i, (j));
+								double v2V = ventV.getValue(i, (j)); }
+								else {
+								double v2U = ventU.getValue(i, (j-1));
+								double v2V = ventV.getValue(i, (j-1));
+							
 							
 							double speed3 = ((j1)*(Math.sqrt((vU * vU) + (vV * vV)))) + ((j2)*(Math.sqrt((v2U * v2U) + (v2V * v2V))));
 							double dir3 = ((j1)*(57.29578 * Math.atan2(vU, vV)) + ((j2)*(57.29578 * Math.atan2(v2U, v2V)) ));
@@ -175,12 +198,18 @@ public class New_Test
 							meteoCoordList.add(new MeteoCoordinate(lat_bis, lon_bis, speed_final,
 									dir_final));
 			
+						}}}
 						}
 						}
+						
+						
+						
+							
+							
 						}
 //						meteoCoordList.add(new MeteoCoordinate(lat, lon, speed,
 //								dir)); 
-						}
+						
 						
 						
 						
@@ -277,6 +306,8 @@ public class New_Test
 			System.out.println(ventV.getUnit());
 			// description de la donnee
 			System.out.println(ventU.getGDS());
+			System.out.println(ventU.getPDS());
+			;
 			
 
 			return meteoCoordList;
@@ -292,6 +323,9 @@ public class New_Test
 		}
 		return null;
 	}
+
+
+
 
 	
 }

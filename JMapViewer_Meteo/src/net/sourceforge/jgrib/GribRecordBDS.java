@@ -279,7 +279,7 @@ public class GribRecordBDS
     */
    public float getValue(int index) throws NoValidGribException
    {
-      if (index >=0 && index < values.length){
+      if (index >= 0 && index < values.length){
          return this.values[index];
       }
       throw new NoValidGribException("GribRecordBDS: Array index out of bounds");

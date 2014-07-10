@@ -25,7 +25,7 @@ public class Essai
     {
         try
         {
-            GribFile grb = new GribFile("C:/Users/mtanguy/Desktop/20140604_172937_.grb");
+            GribFile grb = new GribFile("C:/Users/mtanguy/Desktop/grib/20140710_142919_.grb");
             
 
             GribRecordGDS[] r2 = grb.getGrids();
@@ -51,7 +51,7 @@ public class Essai
                       {
                     	  GribRecord ventU = grb.getRecord(i);
                           GribRecordPDS pds = ventU.getPDS();
-                          System.out.println(pds.getParameter());
+                          System.out.println(i + " " + pds.getParameter() + " " + pds.getGMTForecastTime());
                           
                       }
                       catch (NoValidGribException e)

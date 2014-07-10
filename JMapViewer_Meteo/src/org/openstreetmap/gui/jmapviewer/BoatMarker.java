@@ -7,7 +7,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Path2D.Double;
 
@@ -21,14 +23,21 @@ public class BoatMarker extends MapMarkerDot {
 	/**
 	 * Diamètre du cercle dans lequel seront déssinés les bateaux.
 	 */
-	private static final double D = 8;
-
+	public static double D = 12;
+	public static double a = 3;
+	
+	
 	private Double boatMovingDraw;
 	private Double boatStoppedDraw;
 	private Double illegalBoatDraw;
+	private java.awt.geom.Ellipse2D.Double circle;
 	
 	private double speed;
 	private double direction;
+
+	
+
+	
 
 	public BoatMarker(double lat, double lon) {
         this(new Coordinate(lat,lon));
@@ -70,6 +79,9 @@ public class BoatMarker extends MapMarkerDot {
 		boatMovingDraw.lineTo(D / 2, -D / 2.);
 		boatMovingDraw.closePath();
 		
+		circle = new Ellipse2D.Double(-D/2, -D/2, 10, 10);
+		
+		
 	}
 	
 	public BoatMarker(MeteoCoordinate coord, double speed) {
@@ -83,6 +95,9 @@ public class BoatMarker extends MapMarkerDot {
 		boatMovingDraw.lineTo(D / 3, 0);
 		boatMovingDraw.lineTo(D / 2, -D / 2.);
 		boatMovingDraw.closePath();
+		
+		
+		
 		
 	}
 	
@@ -114,14 +129,14 @@ public class BoatMarker extends MapMarkerDot {
 			g2.rotate((-(Math.PI*(direction)/180)));
 //			Angle en radian = pi * (angle en degr�) / 180 
 			
+			double speed_knot = speed*1.945;
 			
-			
-			if (speed > 8) {
+			if (speed_knot > 23) {
 			g2.setColor(Color.red); }
-			else if (speed > 5) {
+			else if (speed_knot > 23*0.5) {
 			g2.setColor(Color.yellow); 
 			}
-			else if (speed > 1) {
+			else if (speed_knot > 23*0.1) {
 			g2.setColor(Color.green); 
 			}
 			else
@@ -129,29 +144,40 @@ public class BoatMarker extends MapMarkerDot {
 			
 			BasicStroke line = new BasicStroke(3.0f);
 			((Graphics2D) g).setStroke(line);
-			g2.drawLine(0, 0, (int) (speed*3), 0);
+			g2.drawLine(0, 0, (int) (speed*a), 0);
 			
+			if (speed > 0.5) {
 			g2.setPaint(UIConfig.blackSusie);
 			g2.setStroke(UIConfig.getStroke(5));
-			g2.draw(boatMovingDraw);
+			g2.draw(boatMovingDraw); }
 
-			if (speed > 8) {
+			if (speed_knot > 23) {
 				g2.setPaint(UIConfig.blackSusie); }
-				else if (speed > 5) {
+				else if (speed_knot > 23*0.5) {
 					g2.setPaint(UIConfig.darkOrange); 
 				}
-				else if (speed > 1) {
+				else if (speed_knot > 23*0.1) {
 					g2.setPaint(UIConfig.greenOpaque); 
 				}
 					else
 						g2.setPaint(UIConfig.lightGreyAlpha);
 			
 //			g2.setPaint(UIConfig.blueSusie);
+			
+			
 			g2.fill(boatMovingDraw);
-
+			
 			g2.setPaint(Color.WHITE);
 			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
-			g2.draw(boatMovingDraw);
+			
+			
+			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+			if (speed > 0.5) { g2.draw(boatMovingDraw);}
+		
+			else {
+			g2.setPaint(Color.GRAY);
+			g2.draw(circle);		
+			g2.fill(circle); }
 
 			g2.setComposite(oldComposite);
 			g2.setTransform(oldAt);

@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileCache;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 
+
 /**
  * Holds one map tile. Additionally the code for loading the tile image and
  * painting it is also included in this class.
@@ -30,6 +31,8 @@ import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
  * @author Jan Peter Stotz
  */
 public class Tile {
+	
+	public static float trans1;
 
     /**
      * Hourglass image that is displayed until a map tile has been loaded
@@ -241,32 +244,24 @@ public class Tile {
     public void paint(Graphics g, int x, int y) {
         if (image == null)
             return;
-        
-//    	((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//    	           RenderingHints.VALUE_ANTIALIAS_ON);
-//    	    	((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-//    	              RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.drawImage(image, x, y, null);
-//        System.out.println(image.getSource());
+
         
     }
 
-    public void paintT(Graphics g, int x, int y) {
+    public void paint(Graphics g, int x, int y, float alpha) {
         if (image == null)
             return;
 
-        Composite translucent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-//        System.out.println("Transparency ON");
+        Composite translucent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);     
     	((Graphics2D) g).setComposite(translucent);
-//    	((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//           RenderingHints.VALUE_ANTIALIAS_ON);
-//    	((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-//              RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g.drawImage(image, x, y, null);
-//        System.out.println(image.getSource());
+
        
         
     }
+  
+
   
     @Override
     public String toString() {

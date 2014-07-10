@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
 
+import javax.swing.AbstractButton;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -29,6 +30,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.sourceforge.jgrib.examples.MeteoCoordinate;
 import net.sourceforge.jgrib.examples.New_Test;
@@ -45,6 +48,9 @@ import org.openstreetmap.gui.jmapviewer.tilesources.GeomodTileSources;
 import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOpenAerialTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOsmTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
+import org.openstreetmap.gui.jmapviewer.Tile;
+
+import java.awt.Font;
 //import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.EmptyMap;
 
 
@@ -66,10 +72,17 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
     private JLabel mperpLabelName=null;
     private JLabel mperpLabelValue = null;
     
+    
 	private String listTileSourceNames;
-
+	public float valeur_slide = 0f;
 	public static BufferedImage GREEN;
     int i;
+
+	private JSlider slider_2;
+
+	private JTextArea textMeteo;
+
+
     
 
     /**
@@ -77,7 +90,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
      */
     public Demo() {
         super("J-OneMap Demo");
-        setSize(400, 400);
+        setSize(1000, 1000);
 
         treeMap = new JMapViewerTree("Zones");
         
@@ -140,7 +153,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
         
         map().setBounds(getBounds());
 
-        map().SetGrib();
+       
 
         mperpLabelName=new JLabel("Meters/Pixels: ");
         mperpLabelValue=new JLabel(String.format("%s",map().getMeterPerPixel()));
@@ -180,25 +193,11 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
             }
         });
         map().setTileLoader((TileLoader) tileLoaderSelector.getSelectedItem());;
-      
+        
         	
 //        Coordinate topLeft = map().getPosition(0, 0);
 //        Coordinate bottomRight = map().getPosition(map().getWidth(), map().getHeight());
-        
 
-       
-//        for(MeteoCoordinate c:New_Test.grib(8, map().getPosition().getLat(), map().getPosition().getLon() ) ) {
-//       
-//        	map().addMapMarker(new BoatMarker (c));
-//
-//        }
-//
-//		
-		
-		
-		
-		
-		
         JPanel panel_2 = new JPanel();
         panel_2.setBorder(UIManager.getBorder("DesktopIcon.border"));
         panel_2.setBackground(new Color(250, 235, 215));
@@ -263,7 +262,8 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
         panelTop.add(mperpLabelValue);
         
         final JTextArea txtrTest = new JTextArea();
-        txtrTest.setBackground(Color.LIGHT_GRAY);
+        txtrTest.setForeground(new Color(0, 0, 0));
+        txtrTest.setBackground(new Color(255, 255, 204));
         txtrTest.setEditable(true);
         txtrTest.setRows(10);
         txtrTest.setText(listTileSourceNames);
@@ -272,29 +272,108 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
         
         JPanel panel_1 = new JPanel();
         getContentPane().add(panel_1, BorderLayout.WEST);
-        panel_1.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        panel_1.setBorder(UIManager.getBorder("CheckBox.border"));
         
         JLabel lblNewLabel = new JLabel("Données cartographiques");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
         
   
          
 
-      
+        int min = 0;
+        int max = 100;
+        int init = 100;
          
-     
+        
          
          
-         JSlider slider = new JSlider();  
-         JSlider slider_1 = new JSlider();       
-         JSlider slider_2 = new JSlider();  
-         JSlider slider_3 = new JSlider();
+         final JSlider slider_4 = new JSlider(JSlider.HORIZONTAL,min, max, init);  
+         slider_4.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			 map().tr4 = (float)slider_4.getValue()/100;
+             repaint();
+       
+        	 	} 
+		
+         });
+         
+         
+         final JSlider slider_3 = new JSlider(JSlider.HORIZONTAL,min, max, init);  
+         slider_3.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			 map().tr3 = (float)slider_3.getValue()/100;
+             repaint();
+
+        	 	} 
+		
+         });
+         
+         
+         
+         final JSlider slider_2 = new JSlider(JSlider.HORIZONTAL,min, max, init);
+
+         slider_2.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			 map().tr2 = (float)slider_2.getValue()/100;
+             repaint();
+             SetDescription();
+
+        	 	} 
+		
+         });
+		
+
+
+         final JSlider slider_1 = new JSlider(JSlider.HORIZONTAL,min, max, init);
+         slider_1.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			 map().tr1 = (float)slider_1.getValue()/100;
+             repaint();
+
+        	 	} 
+		
+         });
+         
+         final JSlider slider_grib = new JSlider(JSlider.HORIZONTAL,New_Test.t, (New_Test.recordCount/2)-1, New_Test.t);
+         slider_grib.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			  New_Test.t = slider_grib.getValue();
+             map().removeAllMapMarkers();
+             map().SetGrib();
+             textMeteo.setText(New_Test.description);
+             
+
+        	 	} 
+		
+         });
+         
+         final JSlider slider_size = new JSlider(0, 16, (int)BoatMarker.D);
+         slider_size.addChangeListener(new ChangeListener() {
+        	 public void stateChanged(ChangeEvent event)
+        	 	{
+			  BoatMarker.D = slider_size.getValue();
+			  BoatMarker.a = slider_size.getValue()/3;
+             map().removeAllMapMarkers();
+             map().SetGrib();
+            
+             
+
+        	 	} 
+        	 
+         });
                         
          				JComboBox tileSourceSelector = new JComboBox(new TileSource[] { 
          						new OsmTileSource.EmptyMap(),
          		        		new OsmTileSource.Thun(),
          		                new OsmTileSource.Mapnik(),
          		                new OsmTileSource.SeaMap(), 
-         		                new OsmTileSource.CycleMap(), 
+         		                new OsmTileSource.CycleMap(),
+         		                new OsmTileSource.Topo(),
          		                new GeomodTileSources.GAidsToNavigation(), 
          		                new GeomodTileSources.GBase(), 
          		                new GeomodTileSources.GCoverage(),  
@@ -331,6 +410,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                                     new OsmTileSource.Mapnik(),
                                     new OsmTileSource.SeaMap(), 
                                     new OsmTileSource.CycleMap(), 
+                                    new OsmTileSource.Topo(),
                                     new GeomodTileSources.GAidsToNavigation(), 
                                     new GeomodTileSources.GBase(), 
                                     new GeomodTileSources.GCoverage(),  
@@ -344,7 +424,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                                     new MapQuestOsmTileSource(), 
                                     new MapQuestOpenAerialTileSource() }
                         		 );
-                         tileSourceSelector2.setSelectedIndex(3);
+                         tileSourceSelector2.setSelectedIndex(0);
                          
                          final JCheckBox chckbxCheckBox2 = new JCheckBox("");
                          chckbxCheckBox2.setSelected(false);
@@ -359,6 +439,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                                     new OsmTileSource.Mapnik(),
                                     new OsmTileSource.SeaMap(), 
                                     new OsmTileSource.CycleMap(), 
+                                    new OsmTileSource.Topo(),
                                     new GeomodTileSources.GAidsToNavigation(), 
                                     new GeomodTileSources.GBase(), 
                                     new GeomodTileSources.GCoverage(),  
@@ -387,6 +468,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                                  new OsmTileSource.Mapnik(),
                                  new OsmTileSource.SeaMap(), 
                                  new OsmTileSource.CycleMap(), 
+                                 new OsmTileSource.Topo(),
                                  new GeomodTileSources.GAidsToNavigation(), 
                                  new GeomodTileSources.GBase(), 
                                  new GeomodTileSources.GCoverage(),  
@@ -419,11 +501,16 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          
                          JLabel label = new JLabel("Données Météorologiques :");
                          
-                         JTextArea textMeteo = new JTextArea();
+                         textMeteo = new JTextArea();
+                        
                          textMeteo.setText(New_Test.description);
                          textMeteo.setRows(10);
-                         textMeteo.setEditable(true);
-                         textMeteo.setBackground(Color.LIGHT_GRAY);
+                         textMeteo.setEditable(false);
+                         textMeteo.setBackground(new Color(169, 169, 169));
+                         
+                        
+                         
+                        
                          
                          
                          GroupLayout gl_panel_1 = new GroupLayout(panel_1);
@@ -440,7 +527,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          					.addComponent(tileSourceSelector4, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addGap(14)
-                         					.addComponent(slider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                         					.addComponent(slider_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addContainerGap()
                          					.addComponent(chckbxCheckBox3)
@@ -448,7 +535,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          					.addComponent(tileSourceSelector3, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addGap(14)
-                         					.addComponent(slider_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                         					.addComponent(slider_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addContainerGap()
                          					.addComponent(chckbxCheckBox2)
@@ -459,14 +546,22 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          					.addComponent(slider_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addGap(14)
-                         					.addComponent(slider_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                         					.addComponent(slider_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                          				.addGroup(gl_panel_1.createSequentialGroup()
                          					.addGap(4)
                          					.addComponent(chckbxCheckBox1)
                          					.addGap(8)
                          					.addComponent(tileSourceSelector, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE))
                          				.addComponent(label, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE)
-                         				.addComponent(textMeteo, GroupLayout.PREFERRED_SIZE, 239, GroupLayout.PREFERRED_SIZE))
+                         				.addGroup(gl_panel_1.createSequentialGroup()
+                         					.addContainerGap()
+                         					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+                         						.addGroup(gl_panel_1.createSequentialGroup()
+                         							.addComponent(slider_grib, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                         							.addGap(29))
+                         						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+                         							.addComponent(slider_size, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         							.addComponent(textMeteo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))))
                          			.addGap(20))
                          );
                          gl_panel_1.setVerticalGroup(
@@ -481,13 +576,13 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          					.addGap(3)
                          					.addComponent(tileSourceSelector4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                          			.addGap(6)
-                         			.addComponent(slider, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         			.addComponent(slider_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                          			.addGap(7)
                          			.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
                          				.addComponent(tileSourceSelector3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                          				.addComponent(chckbxCheckBox3, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
                          			.addGap(7)
-                         			.addComponent(slider_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         			.addComponent(slider_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                          			.addGap(10)
                          			.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
                          				.addComponent(tileSourceSelector2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -499,12 +594,16 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
                          				.addComponent(chckbxCheckBox1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                          				.addComponent(tileSourceSelector, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                          			.addGap(7)
-                         			.addComponent(slider_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         			.addComponent(slider_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                          			.addGap(18)
                          			.addComponent(label)
-                         			.addPreferredGap(ComponentPlacement.RELATED)
-                         			.addComponent(textMeteo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                         			.addContainerGap(491, Short.MAX_VALUE))
+                         			.addGap(18)
+                         			.addComponent(slider_grib, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         			.addPreferredGap(ComponentPlacement.UNRELATED)
+                         			.addComponent(textMeteo, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+                         			.addGap(18)
+                         			.addComponent(slider_size, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                         			.addContainerGap(567, Short.MAX_VALUE))
                          );
                          panel_1.setLayout(gl_panel_1);
                          tileSourceSelector3.addItemListener(new ItemListener() {
@@ -611,9 +710,12 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
             }
         });
     }
-    private JMapViewer map(){
+    
+  
+	private JMapViewer map(){
         return treeMap.getViewer();
     }
+    
     private static Coordinate c(double lat, double lon){
         return new Coordinate(lat, lon);
     }
@@ -663,5 +765,9 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
       {  	  	
 			listTileSourceNames += "  • " + tileController1.getTileSource().getName() + "\n";
       }
+    }
+    
+    public void SetDescription() { 
+        
     }
 }

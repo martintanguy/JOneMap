@@ -102,7 +102,7 @@ public class BackUpJMapViewer extends JPanel implements TileLoaderListener {
     Boolean tc3t;
     Boolean tc4t;
     
-    BoatMarker BoatMarker = new BoatMarker(49, -4);
+  
     
 	TileController tc1;
 	TileController tc2;

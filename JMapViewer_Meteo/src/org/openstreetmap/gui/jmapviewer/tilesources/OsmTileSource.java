@@ -17,6 +17,7 @@ public class OsmTileSource {
     public static final String MAP_OSMA = "http://tah.openstreetmap.org/Tiles";
     public static final String MAP_SEAMAP = "http://tiles.openseamap.org/seamark";
     public static final String MAP_THUN = "http://tile.thunderforest.com/landscape/";
+    public static final String MAP_TOPO = "http://toolserver.org/~cmarqu/hill";
     public static final String MAP_EMPTY = "";
     
 
@@ -64,6 +65,17 @@ public class OsmTileSource {
     public static class Thun extends AbstractOsmTileSource {
         public Thun() {
             super("ThunderForest", MAP_THUN);
+        }
+
+        public TileUpdate getTileUpdate() {
+            return TileUpdate.IfNoneMatch;
+        }
+
+    }
+    
+    public static class Topo extends AbstractOsmTileSource {
+        public Topo() {
+            super("Topo", MAP_TOPO);
         }
 
         public TileUpdate getTileUpdate() {

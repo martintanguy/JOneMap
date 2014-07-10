@@ -12,6 +12,7 @@ public class TileController {
     protected TileLoader tileLoader;
     protected TileCache tileCache;
     protected TileSource tileSource;
+    protected float transparency;
 
     JobDispatcher jobDispatcher;
 
@@ -20,6 +21,7 @@ public class TileController {
         tileLoader = new OsmTileLoader(listener);
         this.tileCache = tileCache;
         jobDispatcher = JobDispatcher.getInstance();
+        this.transparency = transparency;
     }
 
     /**
@@ -70,6 +72,8 @@ public class TileController {
     public TileSource getTileLayerSource() {
         return tileSource;
     }
+    
+    
 
     public TileSource getTileSource() {
         return tileSource;

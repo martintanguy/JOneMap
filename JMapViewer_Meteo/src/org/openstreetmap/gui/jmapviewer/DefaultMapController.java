@@ -98,7 +98,7 @@ MouseWheelListener {
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (wheelZoomEnabled) {
             map.setZoom(map.getZoom() - e.getWheelRotation(), e.getPoint());
-            New_Test.grib(map.getZoom(), map.Up_x, map.Up_y, map.Down_x, map.Down_y);
+//            New_Test.grib(map.getZoom(), map.Up_x, map.Up_y, map.Down_x, map.Down_y);
         }
     }
 
